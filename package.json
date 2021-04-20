@@ -3,14 +3,17 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@syncfusion/ej2-react-buttons": "^19.1.54",
     "@testing-library/jest-dom": "^5.11.4",
     "@testing-library/react": "^11.1.0",
     "@testing-library/user-event": "^12.1.10",
+    "axios": "^0.21.1",
     "monaco-editor-webpack-plugin": "^3.0.1",
     "react": "^17.0.2",
     "react-dom": "^17.0.2",
     "react-monaco-editor": "^0.43.0",
     "react-scripts": "4.0.3",
+    "use-file-picker": "^0.2.4",
     "web-vitals": "^1.0.1"
   },
   "scripts": {
