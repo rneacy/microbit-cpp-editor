@@ -8,7 +8,7 @@ import { ToastContainer, toast, Zoom } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 import { GoLinkExternal } from 'react-icons/go'
-import { ImCogs, ImCheckmark } from 'react-icons/im'
+import { ImCogs, ImCheckmark, ImCross } from 'react-icons/im'
 import { BiImport, BiExport } from 'react-icons/bi'
 
 import MonacoEditor from 'react-monaco-editor';
@@ -34,19 +34,38 @@ function App() {
         <div>
             <ImCheckmark/> Loaded new file {filesContent[0]["name"]}
         </div>
-    )
+    );
+    const badFileToastMsg = ({ closeToast, toastProps }) => (
+        <div>
+            <ImCross/> Invalid file; only .cpp files are permitted.
+        </div>
+    );
     useEffect(() => {
         if (filesContent.length != 0) {
-            setCode(filesContent[0]["content"]);
-
-            toast.success(newFileToastMsg);
+            if (filesContent[0]["name"].slice(-4) == ".cpp"){
+                setCode(filesContent[0]["content"]);
+                toast.success(newFileToastMsg);
+            }
+            else {
+                toast.error(badFileToastMsg);
+            }
+            
         }
     }, [filesContent]);
 
+    //* Save handling
+    const openFileSave = () => {
+        var a = document.createElement("a");
+        var file = new Blob([editor.getModel().getValue()], { type: "text/plain" });
+        a.href = URL.createObjectURL(file);
+        a.download = "main.cpp"; // for now
+        a.click();
+    }
+
+    //* Editor setup
     const editorOptions = {
         fontSize: 18
     }
-
     const editorMount = (editor, monaco) => {
         setEditor(editor);
         setMonaco(monaco);
@@ -93,7 +112,7 @@ function App() {
                         <ButtonComponent cssClass='e-sidebar' onClick={openFileSelector}>
                             <BiExport/> Import
                         </ButtonComponent>
-                        <ButtonComponent cssClass='e-sidebar'>
+                        <ButtonComponent cssClass='e-sidebar' onClick={openFileSave}>
                             <BiImport/> Save
                         </ButtonComponent>
                     </div>
