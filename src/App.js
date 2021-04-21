@@ -101,7 +101,9 @@ function App() {
                 </div>
                 <div className="Sidebar">
                     <div className="Header">
-                        <img src={logo} className="Logo" alt="micro:bit logo" />
+                        <a href="https://microbit.org" target="_blank" rel="noreferrer">
+                            <img src={logo} className="Logo" alt="micro:bit logo" />
+                        </a>
                         <p>C++ Editor</p>
                     </div>
 

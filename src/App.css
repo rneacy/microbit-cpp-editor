@@ -2,14 +2,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@500&display=swap');
 
 .App {
-  min-height: 100%;
-  min-width: 100%;
-  justify-content: space-around;
+  overflow: hidden;
   font-size: calc(10px + 2vmin);
   color: white;
   display: flex;
-  height: 100%;
   font-family: 'Manrope', sans-serif;
+  height: auto;
 }
 
 .Sidebar {
@@ -49,6 +47,24 @@
   min-width: 10vmin;
   width: auto;
   height: auto;
+  margin: 0 auto;
+}
+.Logo:hover{
+  animation: shake 500ms ease-in-out forwards;
+}
+@keyframes shake {
+  0% { 
+    transform: rotate(0deg);
+  }
+  50% {
+    transform: rotate(-6deg);
+  }
+  70% {
+    transform: rotate(6deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
 }
 
 .Footer {
