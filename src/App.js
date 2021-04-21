@@ -9,7 +9,8 @@ import 'react-toastify/dist/ReactToastify.css';
 
 import { GoLinkExternal } from 'react-icons/go'
 import { ImCogs, ImCheckmark, ImCross } from 'react-icons/im'
-import { BiImport, BiExport } from 'react-icons/bi'
+import { BiImport, BiExport, BiHelpCircle } from 'react-icons/bi'
+import { CgOptions } from 'react-icons/cg'
 
 import MonacoEditor from 'react-monaco-editor';
 
@@ -23,6 +24,7 @@ function App() {
     const [code, setCode] = useState('#include "MicroBit.h"\n\nMicroBit uBit;\n\nint main(){\n\tuBit.init();\n\n\twhile(1)\n\t\tuBit.display.scroll("Hello world!");\n}');
     const [editor, setEditor] = useState();
     const [monaco, setMonaco] = useState();
+    const [fileName, setFileName] = useState("main");
 
     //* Import handling
     const [filesContent, errors, openFileSelector, loading] = useFilePicker({
@@ -42,7 +44,10 @@ function App() {
     );
     useEffect(() => {
         if (filesContent.length != 0) {
-            if (filesContent[0]["name"].slice(-4) == ".cpp"){
+            const fileExt = filesContent[0]["name"].slice(-4);
+            const nameInEditor = filesContent[0]["name"].slice(0, -4);
+            if (fileExt == ".cpp"){
+                setFileName(nameInEditor);
                 setCode(filesContent[0]["content"]);
                 toast.success(newFileToastMsg);
             }
@@ -58,13 +63,14 @@ function App() {
         var a = document.createElement("a");
         var file = new Blob([editor.getModel().getValue()], { type: "text/plain" });
         a.href = URL.createObjectURL(file);
-        a.download = "main.cpp"; // for now
+        a.download = fileName + ".cpp";
         a.click();
     }
 
     //* Editor setup
     const editorOptions = {
-        fontSize: 18
+        fontSize: 18,
+        scrollBeyondLastLine: false
     }
     const editorMount = (editor, monaco) => {
         setEditor(editor);
@@ -83,7 +89,6 @@ function App() {
         window.addEventListener("resize", () => resizeEditor);
         return () => window.removeEventListener("resize", resizeEditor);
     }, [editor]);
-
 
     return (
         <>
@@ -111,11 +116,31 @@ function App() {
                         <ButtonComponent cssClass='e-sidebar' onClick={() => convert(code)}>
                             <ImCogs/> Compile
                         </ButtonComponent>
-                        <ButtonComponent cssClass='e-sidebar' onClick={openFileSelector}>
-                            <BiExport/> Import
+                        <div className="Interaction-Row">
+                            <ButtonComponent cssClass='e-sidebar' onClick={openFileSelector}>
+                                <BiImport/> Import
+                            </ButtonComponent>
+                            <ButtonComponent cssClass='e-sidebar' onClick={openFileSave}>
+                                <BiExport/> Export
+                            </ButtonComponent>
+                        </div>
+                        
+                    </div>
+
+                    <div className="FileName">
+                        <label style={{color: 'black'}}>
+                            File Name:
+                            <input type="text" value={fileName} onChange={(event) => setFileName(event.target.value)} />
+                        </label>
+                    </div>
+
+                    <div className="Options">
+                        <ButtonComponent cssClass='e-sidebar-dark'>
+                            <CgOptions/> Options
                         </ButtonComponent>
-                        <ButtonComponent cssClass='e-sidebar' onClick={openFileSave}>
-                            <BiImport/> Save
+
+                        <ButtonComponent cssClass='e-sidebar-dark'>
+                            <BiHelpCircle/> Help
                         </ButtonComponent>
                     </div>
 
