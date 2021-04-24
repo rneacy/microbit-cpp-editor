@@ -93,33 +93,36 @@ function App() {
     }
 
     //* Compilation handling
-    const startCompile = () => {
+    const startCompile = (isReal) => {
         setCompiling(true);
         const msg = "Compilation started...";
         toast(<InfoToast msg={msg} />);
         
         const converted = convert(code);
 
-        const headers = {
-            "Content-Type": "application/json",
-            "X-Api-Key": "hDx5GMhFOq7gTuOqUIQXp1Gr8IBKfGrSMNTO2sS0"
+        if (isReal) {
+            const headers = {
+                "Content-Type": "application/json",
+                "X-Api-Key": "hDx5GMhFOq7gTuOqUIQXp1Gr8IBKfGrSMNTO2sS0"
+            }
+            
+            axios
+                .post("https://ejnno1d6p3.execute-api.eu-west-2.amazonaws.com/build/codalbuild", converted, { headers: headers } )
+                .then(res => {
+                    toast.success(<SuccessToast msg="Compiled successfully." />);
+                    
+                    const compiledProgram = JSON.parse(res.data.body);
+                    openProgramSave(compiledProgram["program"]);
+
+                    setCompiling(false);
+                })
+                .catch(err => {
+                    const msg = "Compilation failed: " + err;
+                    toast.error(<ErrorToast msg={msg} />);
+
+                    setCompiling(false);
+                });
         }
-        
-        axios
-            .post("https://ejnno1d6p3.execute-api.eu-west-2.amazonaws.com/build/codalbuild", converted, { headers: headers} )
-            .then(res => {
-                toast.success(<SuccessToast msg="Compiled successfully." />);
-                
-                const compiledProgram = JSON.parse(res.data.body);
-
-                openProgramSave(compiledProgram["program"]);
-            })
-            .catch(err => {
-                const msg = "Compilation failed: " + err;
-                toast.error(<ErrorToast msg={msg} />);
-            });
-
-        setCompiling(false);
     }
 
     //* Editor setup
@@ -166,8 +169,8 @@ function App() {
                     </div>
 
                     <div className="Interaction">
-                        <ButtonComponent cssClass='e-sidebar' onClick={startCompile}>
-                            <ImCogs/> Compile
+                        <ButtonComponent cssClass='e-sidebar' onClick={() => startCompile(true)} disabled={compiling}>
+                            <ImCogs/> {compiling ? "Compiling..." : "Compile"}
                         </ButtonComponent>
                         <div className="Interaction-Row">
                             <ButtonComponent cssClass='e-sidebar' onClick={openFileSelector}>
