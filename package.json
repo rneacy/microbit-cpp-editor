@@ -15,6 +15,7 @@
     "react-monaco-editor": "^0.43.0",
     "react-scripts": "4.0.3",
     "react-toastify": "^7.0.3",
+    "reactjs-popup": "^2.0.4",
     "use-file-picker": "^0.2.4",
     "web-vitals": "^1.0.1"
   },

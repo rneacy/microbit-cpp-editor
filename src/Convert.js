@@ -6,7 +6,7 @@ function convert(code) {
     code = "{\"program\": \"" + code
     code = code + "\"}"
 
-    console.log(code);
+    return JSON.parse(code)
 }
 
 export default convert;

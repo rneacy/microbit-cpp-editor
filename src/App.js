@@ -1,5 +1,5 @@
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 import './App.css';
 import logo from './res/logo.portrait.white.notxt.svg';
@@ -7,24 +7,47 @@ import logo from './res/logo.portrait.white.notxt.svg';
 import { ToastContainer, toast, Zoom } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-import { GoLinkExternal } from 'react-icons/go'
-import { ImCogs, ImCheckmark, ImCross } from 'react-icons/im'
-import { BiImport, BiExport, BiHelpCircle } from 'react-icons/bi'
-import { CgOptions } from 'react-icons/cg'
+import { GoLinkExternal } from 'react-icons/go';
+import { ImCogs, ImCheckmark, ImCross } from 'react-icons/im';
+import { BiImport, BiExport, BiHelpCircle } from 'react-icons/bi';
+import { CgOptions } from 'react-icons/cg';
+import { GrInProgress } from 'react-icons/gr';
+
+import axios from "axios";
+
+import Popup from 'reactjs-popup';
 
 import MonacoEditor from 'react-monaco-editor';
 
 import { useFilePicker } from 'use-file-picker';
 
-import { ButtonComponent } from '@syncfusion/ej2-react-buttons'
+import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 
-import convert from './Convert'
+import convert from './Convert';
 
 function App() {
     const [code, setCode] = useState('#include "MicroBit.h"\n\nMicroBit uBit;\n\nint main(){\n\tuBit.init();\n\n\twhile(1)\n\t\tuBit.display.scroll("Hello world!");\n}');
     const [editor, setEditor] = useState();
     const [monaco, setMonaco] = useState();
     const [fileName, setFileName] = useState("main");
+    const [compiling, setCompiling] = useState(false);
+
+    //* Toasts
+    const SuccessToast = (props, { closeToast, toastProps }) => (
+        <div>
+            <ImCheckmark/> {props.msg}
+        </div>
+    );
+    const ErrorToast = (props, { closeToast, toastProps }) => (
+        <div>
+            <ImCross/> {props.msg}
+        </div>
+    );
+    const InfoToast = (props, { closeToast, toastProps }) => (
+        <div>
+            <GrInProgress/> {props.msg}
+        </div>
+    );
 
     //* Import handling
     const [filesContent, errors, openFileSelector, loading] = useFilePicker({
@@ -32,16 +55,7 @@ function App() {
         readAs: 'Text', // default: "Text", availible formats: "Text" | "BinaryString" | "ArrayBuffer" | "DataURL"
         accept: ['.cpp'],
     });
-    const newFileToastMsg = ({ closeToast, toastProps }) => (
-        <div>
-            <ImCheckmark/> Loaded new file {filesContent[0]["name"]}
-        </div>
-    );
-    const badFileToastMsg = ({ closeToast, toastProps }) => (
-        <div>
-            <ImCross/> Invalid file; only .cpp files are permitted.
-        </div>
-    );
+    
     useEffect(() => {
         if (filesContent.length != 0) {
             const fileExt = filesContent[0]["name"].slice(-4);
@@ -49,10 +63,13 @@ function App() {
             if (fileExt == ".cpp"){
                 setFileName(nameInEditor);
                 setCode(filesContent[0]["content"]);
-                toast.success(newFileToastMsg);
+
+                const msg = "Loaded " + nameInEditor;
+                toast.success(<SuccessToast msg={msg} />);
             }
             else {
-                toast.error(badFileToastMsg);
+                const msg = "Invalid file; only .cpp files are permitted.";
+                toast.error(<ErrorToast msg={msg}/>);
             }
             
         }
@@ -67,6 +84,44 @@ function App() {
         a.click();
     }
 
+    const openProgramSave = (res) => { // response from AWS
+        var a = document.createElement("a");
+        var file = new Blob([res], { type: "application/octet-stream" });
+        a.href = URL.createObjectURL(file);
+        a.download = "MICROBIT";
+        a.click();
+    }
+
+    //* Compilation handling
+    const startCompile = () => {
+        setCompiling(true);
+        const msg = "Compilation started...";
+        toast(<InfoToast msg={msg} />);
+        
+        const converted = convert(code);
+
+        const headers = {
+            "Content-Type": "application/json",
+            "X-Api-Key": "hDx5GMhFOq7gTuOqUIQXp1Gr8IBKfGrSMNTO2sS0"
+        }
+        
+        axios
+            .post("https://ejnno1d6p3.execute-api.eu-west-2.amazonaws.com/build/codalbuild", converted, { headers: headers} )
+            .then(res => {
+                toast.success(<SuccessToast msg="Compiled successfully." />);
+                
+                const compiledProgram = JSON.parse(res.data.body);
+
+                openProgramSave(compiledProgram["program"]);
+            })
+            .catch(err => {
+                const msg = "Compilation failed: " + err;
+                toast.error(<ErrorToast msg={msg} />);
+            });
+
+        setCompiling(false);
+    }
+
     //* Editor setup
     const editorOptions = {
         fontSize: 18,
@@ -75,8 +130,6 @@ function App() {
     const editorMount = (editor, monaco) => {
         setEditor(editor);
         setMonaco(monaco);
-
-        console.log(monaco);
     }
 
     //* Editor resize
@@ -113,7 +166,7 @@ function App() {
                     </div>
 
                     <div className="Interaction">
-                        <ButtonComponent cssClass='e-sidebar' onClick={() => convert(code)}>
+                        <ButtonComponent cssClass='e-sidebar' onClick={startCompile}>
                             <ImCogs/> Compile
                         </ButtonComponent>
                         <div className="Interaction-Row">
@@ -163,6 +216,9 @@ function App() {
                     pauseOnHover
                     transition={Zoom}
                 />
+            </div>
+            <div>
+
             </div>
         </>
     );
