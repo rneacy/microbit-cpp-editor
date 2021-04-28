@@ -1791,6 +1791,13 @@
   resolved "https://registry.yarnpkg.com/@types/minimatch/-/minimatch-3.0.3.tgz#3dca0e3f33b200fc7d1139c0cd96c1268cadfd9d"
   integrity sha512-tHq6qdbT9U1IRSGf14CL0pUlULksvY9OZ+5eEgl1N7t+OA3tGvNpxJCzuKQlsNgCVwbAs670L1vcVQi8j9HjnA==
 
+"@types/node-hid@^1.2.0":
+  version "1.3.0"
+  resolved "https://registry.yarnpkg.com/@types/node-hid/-/node-hid-1.3.0.tgz#fe021af9df739871c3cb60e7efaa4adfe91d58e6"
+  integrity sha512-jQ9Z8PegPENPlzR/7fziAF6yqcdYYcIfeJOiN1wnk2zf/Y8yFpprf6uEp1OWPdzhM9dBgv/K5MQ5WFHwK22Gbg==
+  dependencies:
+    "@types/node" "*"
+
 "@types/node@*":
   version "14.14.31"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-14.14.31.tgz#72286bd33d137aa0d152d47ec7c1762563d34055"
@@ -1851,6 +1858,18 @@
   integrity sha512-sYAF+CF9XZ5cvEBkI7RtrG9g2GtMBkviTnBxYYyq+8BWvO4QtXfwwR6a2LFwCi4evMKZfpv6U43ViYvv17Wz3Q==
   dependencies:
     source-map "^0.6.1"
+
+"@types/usb@^1.5.1":
+  version "1.5.2"
+  resolved "https://registry.yarnpkg.com/@types/usb/-/usb-1.5.2.tgz#bb7d325908af547b69dc0f0b70030cc23b9839fd"
+  integrity sha512-mYGrpSQ+qYApVDQRXdjnbMpFxuO9o85YO6EfTAZwEWNZf4ptbWTT59g3WmyA/QmpecAD3ZRjdN0UkpZGcu/TVg==
+  dependencies:
+    "@types/node" "*"
+
+"@types/w3c-web-usb@^1.0.4":
+  version "1.0.4"
+  resolved "https://registry.yarnpkg.com/@types/w3c-web-usb/-/w3c-web-usb-1.0.4.tgz#57e4181041dc1ad2bfad59b737caa7bddc7e1a27"
+  integrity sha512-aaOB3EL5WCWBBOYX7W1MKuzspOM9ZJI9s3iziRVypr1N+QyvIgXzCM4lm1iiOQ1VFzZioUPX9bsa23myCbKK4A==
 
 "@types/webpack-sources@*":
   version "2.1.0"
@@ -3875,6 +3894,15 @@ damerau-levenshtein@^1.0.6:
   version "1.0.6"
   resolved "https://registry.yarnpkg.com/damerau-levenshtein/-/damerau-levenshtein-1.0.6.tgz#143c1641cb3d85c60c32329e26899adea8701791"
   integrity sha512-JVrozIeElnj3QzfUIt8tB8YMluBJom4Vw9qTPpjGYQ9fYlB3D/rb6OordUxf3xeFB35LKWs0xqcO5U6ySvBtug==
+
+dapjs@^2.3.0:
+  version "2.3.0"
+  resolved "https://registry.yarnpkg.com/dapjs/-/dapjs-2.3.0.tgz#91b7b4d1821a364766cf61075a0b90452363c9fa"
+  integrity sha512-quanzq7+2xnqgGqqYgARz9o3iBcZ3Ir5r5mTA7WPsjrp9ilEqqCToSFGTL+8HuGP35dUIL7O+yMBloYHhHgZDA==
+  dependencies:
+    "@types/node-hid" "^1.2.0"
+    "@types/usb" "^1.5.1"
+    "@types/w3c-web-usb" "^1.0.4"
 
 dashdash@^1.12.0:
   version "1.14.1"
@@ -8802,7 +8830,7 @@ prompts@2.4.0, prompts@^2.0.1:
     kleur "^3.0.3"
     sisteransi "^1.0.5"
 
-prop-types@^15.7.2:
+prop-types@^15.6.1, prop-types@^15.7.2:
   version "15.7.2"
   resolved "https://registry.yarnpkg.com/prop-types/-/prop-types-15.7.2.tgz#52c41e75b8c87e72b9d9360e0206b99dcbffa6c5"
   integrity sha512-8QQikdH7//R2vurIJSutZ1smHYTcLpRWEOlHnzcWHmBYrOGUysKwSsrC89BCiFj3CbrfJ/nXFdJepOVrY1GCHQ==
@@ -9028,6 +9056,13 @@ react-error-overlay@^6.0.9:
   version "6.0.9"
   resolved "https://registry.yarnpkg.com/react-error-overlay/-/react-error-overlay-6.0.9.tgz#3c743010c9359608c375ecd6bc76f35d93995b0a"
   integrity sha512-nQTTcUu+ATDbrSD1BZHr5kgSD4oF8OFjxun8uAaL8RwPBacGBNPf/yAuVVdx17N8XNzRDMrZ9XcKZHCjPW+9ew==
+
+react-hotkeys@^2.0.0:
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/react-hotkeys/-/react-hotkeys-2.0.0.tgz#a7719c7340cbba888b0e9184f806a9ec0ac2c53f"
+  integrity sha512-3n3OU8vLX/pfcJrR3xJ1zlww6KS1kEJt0Whxc4FiGV+MJrQ1mYSYI3qS/11d2MJDFm8IhOXMTFQirfu6AVOF6Q==
+  dependencies:
+    prop-types "^15.6.1"
 
 react-icons@^4.2.0:
   version "4.2.0"

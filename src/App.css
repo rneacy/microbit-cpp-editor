@@ -42,7 +42,11 @@
 
 .Interaction-Row {
   width: 100%;
-  height: 100%;
+  
+}
+
+.Interaction-Break {
+  height: 10vmin;
 }
 
 .App-link {
@@ -96,6 +100,15 @@
   font-weight: 700;
 }
 
+.e-sidebar-purple, .e-sidebar-purple:focus, .e-sidebar-purple:active {
+  background-color: #A363F8;
+  color: #fff;
+}
+
+.e-sidebar-purple:hover {
+  background-color: #8C55D4;
+}
+
 .e-sidebar, .e-sidebar:hover, .e-sidebar:focus, .e-sidebar:active {
   background-color: #3EB6FD;
   color: #fff;
@@ -112,6 +125,11 @@
 
 .e-sidebar-dark:hover {
   background-color: #2782B0;
+}
+
+.sidebar-label {
+  color: black;
+  font-size: 2vmin;
 }
 
 button {
