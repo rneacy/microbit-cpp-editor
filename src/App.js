@@ -231,15 +231,16 @@ function App() {
                             cssClass='e-sidebar'
                             onClick={() => compileAndSave()} 
                             disabled={compiling}
+                            title='Send your program to be compiled into a .hex.'
                         >
                             <ImCogs/> {compiling ? "Compiling..." : "Compile"}
                         </ButtonComponent>
 
                         <div className="Interaction-Row">
-                            <ButtonComponent cssClass='e-sidebar' onClick={openFileSelector}>
+                            <ButtonComponent cssClass='e-sidebar' onClick={openFileSelector} title='Import a .cpp file.'>
                                 <BiImport/> Import
                             </ButtonComponent>
-                            <ButtonComponent cssClass='e-sidebar' onClick={openFileSave}>
+                            <ButtonComponent cssClass='e-sidebar' onClick={openFileSave} title='Export this .cpp file.'>
                                 <BiExport/> Export
                             </ButtonComponent>
                         </div>
@@ -251,6 +252,7 @@ function App() {
                             cssClass='e-sidebar-purple e-sidebar'
                             onClick={connectToMicroBit}
                             disabled={mbConnection!==undefined}
+                            title='Connect to your micro:bit over USB.'
                         >
                             <RiUsbFill/> {mbConnection === undefined ? "Connect micro:bit" : "Connected"}
                         </ButtonComponent>
@@ -260,6 +262,7 @@ function App() {
                                 cssClass='e-sidebar-purple e-sidebar'
                                 disabled={mbConnection===undefined}
                                 onClick={attemptFlash}
+                                title='Compile and flash the program directly to your micro:bit.'
                             >
                                 <RiFlashlightFill/> Flash
                             </ButtonComponent>
@@ -268,6 +271,7 @@ function App() {
                                 cssClass='e-sidebar-purple e-sidebar'
                                 disabled={mbConnection===undefined}
                                 onClick={attemptSerial}
+                                title='Open a serial console to your micro:bit.'
                             >
                                 <FaPager/> Serial
                             </ButtonComponent>
@@ -282,11 +286,11 @@ function App() {
                     </div>
 
                     <div className="Options">
-                        <ButtonComponent cssClass='e-sidebar-dark'>
+                        <ButtonComponent cssClass='e-sidebar-dark' title='See editor options/settings.'>
                             <CgOptions/> Options
                         </ButtonComponent>
 
-                        <ButtonComponent cssClass='e-sidebar-dark'>
+                        <ButtonComponent cssClass='e-sidebar-dark' title='Get additional help.'>
                             <BiHelpCircle/> Help
                         </ButtonComponent>
                     </div>
