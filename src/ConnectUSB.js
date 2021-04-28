@@ -53,6 +53,15 @@ class MicroBitConnection {
         });
     }
 
+    async disconnectSerial() {
+        console.info("USB: Disconnecting from serial...");
+
+        this.dap.stopSerialRead().then(() => {
+            this.serialMode = false;
+            console.info("USB: Disconnected from serial.");
+        });
+    }
+
     async sendSerialMessage(msg) {
         if(!this.connected) {
             throw Error("Not connected to micro:bit.");
