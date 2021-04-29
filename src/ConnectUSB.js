@@ -1,6 +1,6 @@
 const DAPjs = require('dapjs');
 
-class MicroBitConnection {
+export class MicroBitConnection {
     constructor(device) {
         this.device = device;
 
@@ -18,14 +18,22 @@ class MicroBitConnection {
     async connect() {
         console.info("USB: Attempting connection...");
 
-        this.dap.connect()
+        await this.dap.connect()
             .then(() => {
-                console.info("USB: Connected!");              // success
-                this.dap.setSerialBaudrate(115200);
+                console.info("USB: Connected!");
+                this.dap.setSerialBaudrate(this.FAST_SERIAL_BAUD);
                 this.connected = true;
-            },
-                err => console.error(err)               // reject
-            );
+            })
+            .catch((err) => {
+                console.error(err);
+                throw new Error(err);
+            });
+    }
+
+    async disconnectDap() {
+        console.info("USB: Disconnecting DAP...");
+
+        return this.dap.disconnect();
     }
 
     async flash(rom) {
@@ -43,23 +51,17 @@ class MicroBitConnection {
             console.warn("USB: Wasn't connected; attempting...");
             await this.connect();
         }
-
-        this.dap.startSerialRead();
+        this.dap.startSerialRead(1);
         this.serialMode = true;
         console.info("USB: Now in serial mode.");
-
-        this.dap.on(DAPjs.DAPLink.EVENT_SERIAL_DATA, (data) => {
-            console.log("Serial [Received]: " + data);
-        });
     }
 
     async disconnectSerial() {
         console.info("USB: Disconnecting from serial...");
 
-        this.dap.stopSerialRead().then(() => {
-            this.serialMode = false;
-            console.info("USB: Disconnected from serial.");
-        });
+        this.dap.stopSerialRead();
+        this.serialMode = false;
+        console.info("USB: Disconnected from serial.");
     }
 
     async sendSerialMessage(msg) {
@@ -75,6 +77,10 @@ class MicroBitConnection {
         })
         .catch( err => console.error(err));
     }
+
+    static SERIAL_EVENT = DAPjs.DAPLink.EVENT_SERIAL_DATA;
+    static FAST_SERIAL_BAUD = 115200;
+    static SLOW_SERIAL_BAUD = 9600;
 }
 
 export async function connectUSBDAPjs() {

@@ -12,8 +12,8 @@ import { GoLinkExternal } from 'react-icons/go';
 import { ImCogs, ImCheckmark, ImCross } from 'react-icons/im';
 import { BiImport, BiExport, BiHelpCircle, BiError } from 'react-icons/bi';
 import { CgOptions } from 'react-icons/cg';
-import { GrInProgress } from 'react-icons/gr';
-import { RiUsbFill, RiFlashlightFill } from 'react-icons/ri';
+import { GrInProgress, GrStatusDisabledSmall } from 'react-icons/gr';
+import { RiUsbFill, RiFlashlightFill, RiFileEditLine } from 'react-icons/ri';
 import { FaPager } from 'react-icons/fa';
 
 import axios from "axios";
@@ -24,18 +24,35 @@ import { HotKeys } from 'react-hotkeys';
 
 import precompile from './res/precompile.json';
 import convert from './Convert';
-import { connectUSBDAPjs } from './ConnectUSB';
+import { connectUSBDAPjs, MicroBitConnection } from './ConnectUSB';
 
 const AWS_COMPILE = true; //! Enable to have actual builds.
 
+// Toggle options
+const ENABLED = 1;
+const DISABLED = 0;
+
+const MONACO_WIDTH      = ["0", "80vmax"];
+const MONACO_HEIGHT     = ["0", "100vh"];
+const CONSOLE_HEIGHT    = ["0", "95vh"];
+const CONSOLE_WIDTH     = MONACO_WIDTH;
+const SERIAL_LABEL      = ["Serial", "Editor"];
+
 function App() {
     const [code, setCode] = useState('#include "MicroBit.h"\n\nMicroBit uBit;\n\nint main(){\n\tuBit.init();\n\n\twhile(1)\n\t\tuBit.display.scroll("Hello world!");\n}');
+    const [consoleOut, setConsoleOut] = useState('');
     const [editor, setEditor] = useState();
     const [monaco, setMonaco] = useState();
+    const [editorWidth, setEditorWidth] = useState(MONACO_WIDTH[ENABLED]);
+    const [consoleWidth, setConsoleWidth] = useState(CONSOLE_WIDTH[DISABLED]);
+    const [editorHeight, setEditorHeight] = useState(MONACO_HEIGHT[ENABLED]);
+    const [consoleHeight, setConsoleHeight] = useState(CONSOLE_HEIGHT[DISABLED]);
+
     const [fileName, setFileName] = useState("main");
     const [compiling, setCompiling] = useState(false);
 
     const [mbConnection, setMbConnection] = useState();
+    const [serialButtonLabel, setSerialButtonLabel] = useState(SERIAL_LABEL[DISABLED]);
 
     //* Toasts
     const SuccessToast = (props, { closeToast, toastProps }) => (
@@ -143,7 +160,7 @@ function App() {
                 openProgramSave(program["program"])
             })
             .catch(err => {
-                toast.error(<ErrorToast msg={err} />);
+                toast.error(<ErrorToast msg={err.message} />, {autoClose: false});
             })
     }
 
@@ -151,11 +168,18 @@ function App() {
     const editorOptions = {
         fontSize: 18,
         scrollBeyondLastLine: false
-    }
+    };
+    const consoleOptions = {
+        fontSize: 20,
+        scrollBeyondLastLine: false,
+        readOnly: true,
+        lineNumbers: false,
+        fontFamily: 'Cutive Mono'
+    };
     const editorMount = (editor, monaco) => {
         setEditor(editor);
         setMonaco(monaco);
-    }
+    };
 
     //* Editor resize
     useEffect(() => {
@@ -185,7 +209,8 @@ function App() {
         if (mbConnection !== undefined) {
             console.log(mbConnection);
 
-            mbConnection.connect();
+            mbConnection.connect()
+                .catch(err => toast.error(<ErrorToast msg={err.message}/>, {autoClose: false}));
         }
     }, [mbConnection]);
 
@@ -198,9 +223,41 @@ function App() {
         }
     }
 
+    const toggleEditors = () => {
+        if (editorWidth === MONACO_WIDTH[ENABLED]) { // Switch to console
+            setConsoleWidth(CONSOLE_WIDTH[ENABLED]);
+            setConsoleHeight(CONSOLE_HEIGHT[ENABLED]);
+
+            setEditorWidth(MONACO_WIDTH[DISABLED]);
+            setEditorHeight(MONACO_HEIGHT[DISABLED]);
+
+            setSerialButtonLabel(SERIAL_LABEL[ENABLED]);
+        }
+        else { // Switch to editor
+            setConsoleWidth(CONSOLE_WIDTH[DISABLED]);
+            setConsoleHeight(CONSOLE_HEIGHT[DISABLED]);
+
+            setEditorWidth(MONACO_WIDTH[ENABLED]);
+            setEditorHeight(MONACO_HEIGHT[ENABLED]);
+
+            setSerialButtonLabel(SERIAL_LABEL[DISABLED]);
+        }
+    }
+
     const attemptSerial = () => {
         if (mbConnection !== undefined) {
-            mbConnection.startSerial();
+            if(!mbConnection.serialMode){
+                mbConnection.startSerial();
+                toggleEditors();
+
+                mbConnection.dap.on(MicroBitConnection.SERIAL_EVENT, (data) => {
+                    setConsoleOut(consoleOut + consoleOut === '' ? '':"\n" + data);
+                });
+            }
+            else {    
+                mbConnection.disconnectSerial();
+                toggleEditors();
+            }
         }
     }
 
@@ -210,12 +267,35 @@ function App() {
                 <div className="Editor">
                     <MonacoEditor 
                         theme="vs-dark"
-                        width="80vmax"
-                        height="100vh"
+                        width={editorWidth}
+                        height={editorHeight}
                         language="cpp"
                         options={editorOptions}
                         value={code}
                         editorDidMount={editorMount}
+                        onChange={(newValue, event) => setCode(newValue) }
+                    />
+                    <MonacoEditor
+                        theme="vs-dark"
+                        width={consoleWidth}
+                        height={consoleHeight}
+                        options={consoleOptions}
+                        value={consoleOut}
+                    />
+                    <input type="text" 
+                        style={{
+                            width: "79.8vmax",
+                            height: "4.5vh",
+                            margin: "none",
+                            border: "none",
+                            padding: "none",
+                            display: "table-cell",
+                            textAlign: "left",
+                            fontFamily: "Cutive Mono",
+                            color: "white",
+                            backgroundColor: "black",
+                            outline: "none"
+                        }}
                     />
                 </div>
                 <div className="Sidebar">
@@ -273,7 +353,7 @@ function App() {
                                 onClick={attemptSerial}
                                 title='Open a serial console to your micro:bit.'
                             >
-                                <FaPager/> Serial
+                                <FaPager/> {serialButtonLabel}
                             </ButtonComponent>
                         </div>
                     </div>

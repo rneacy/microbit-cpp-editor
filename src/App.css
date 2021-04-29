@@ -1,13 +1,14 @@
 @import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;700;800&display=swap');
 @import url('https://fonts.googleapis.com/css2?family=Exo+2:wght@500&display=swap&text=rneacy');
+@import url('https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap');
 
 .App {
   overflow: hidden;
   font-size: calc(10px + 2vmin);
-  color: white;
+  color: black;
   display: flex;
   font-family: 'Manrope', sans-serif;
-  height: auto;
+  height: 100vh;
 }
 
 .Sidebar {
