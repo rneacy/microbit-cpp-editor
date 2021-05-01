@@ -20,7 +20,6 @@ import axios from "axios";
 import MonacoEditor from 'react-monaco-editor';
 import { useFilePicker } from 'use-file-picker';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
-import { HotKeys } from 'react-hotkeys';
 
 import precompile from './res/precompile.json';
 import convert from './Convert';
@@ -41,6 +40,7 @@ const SERIAL_LABEL      = ["Serial", "Editor"];
 function App() {
     const [code, setCode] = useState('#include "MicroBit.h"\n\nMicroBit uBit;\n\nint main(){\n\tuBit.init();\n\n\twhile(1)\n\t\tuBit.display.scroll("Hello world!");\n}');
     const [consoleOut, setConsoleOut] = useState('');
+    const [consoleInput, setConsoleInput] = useState('');
     const [editor, setEditor] = useState();
     const [monaco, setMonaco] = useState();
     const [editorWidth, setEditorWidth] = useState(MONACO_WIDTH[ENABLED]);
@@ -192,14 +192,6 @@ function App() {
         return () => window.removeEventListener("resize", resizeEditor);
     }, [editor]);
 
-    //* Hotkey mapping and control
-    const KeyMappings = {
-        SAVE: "up up"
-    }
-    const KeyHandlers = {
-        SAVE: event => openFileSave()
-    }
-
     //* micro:bit USB connection
     const connectToMicroBit = () => {
         connectUSBDAPjs()
@@ -261,6 +253,16 @@ function App() {
         }
     }
 
+    const serialSend = (event) => {
+        event.preventDefault();
+        event.stopPropagation();
+
+        if (mbConnection !== undefined) {
+            mbConnection.sendSerialMessage(consoleInput);
+            setConsoleInput('');
+        }
+    }
+
     return (
         <>
             <div className="App">
@@ -282,21 +284,27 @@ function App() {
                         options={consoleOptions}
                         value={consoleOut}
                     />
-                    <input type="text" 
-                        style={{
-                            width: "79.8vmax",
-                            height: "4.5vh",
-                            margin: "none",
-                            border: "none",
-                            padding: "none",
-                            display: "table-cell",
-                            textAlign: "left",
-                            fontFamily: "Cutive Mono",
-                            color: "white",
-                            backgroundColor: "black",
-                            outline: "none"
-                        }}
-                    />
+                    <form onSubmit={serialSend}>
+                        <input type="text" 
+                            style={{
+                                width: "79.8vmax",
+                                height: "4.5vh",
+                                margin: "none",
+                                border: "none",
+                                padding: "none",
+                                display: "table-cell",
+                                textAlign: "left",
+                                fontFamily: "Cutive Mono",
+                                color: "white",
+                                backgroundColor: "black",
+                                outline: "none"
+                            }}
+                            placeholder='Type what you want to send, and press Enter/Return.'
+                            value={consoleInput}
+                            onChange={(event) => setConsoleInput(event.target.value)}
+                        />
+                        <button type="submit" style={{display: 'none'}}></button>
+                    </form>
                 </div>
                 <div className="Sidebar">
                     <div className="Header">
@@ -380,7 +388,6 @@ function App() {
                     </div>
                     
                 </div>
-                <HotKeys keyMap={KeyMappings} handlers={KeyHandlers} />
             </div>
             <div>
                 <ToastContainer

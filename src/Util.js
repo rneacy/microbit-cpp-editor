@@ -11,6 +11,7 @@ export const useEffectFirstChange = (func, deps) => {
         else {
             first.current = true;
         }
+// eslint-disable-next-line
     }, deps);
 
     useEffect(() => {
