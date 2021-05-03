@@ -31,7 +31,7 @@ const AWS_COMPILE = true; //! Enable to have actual builds.
 const ENABLED = 1;
 const DISABLED = 0;
 
-const MONACO_WIDTH      = ["0", "80vmax"];
+const MONACO_WIDTH      = ["0", "80vw"];
 const MONACO_HEIGHT     = ["0", "100vh"];
 const CONSOLE_HEIGHT    = ["0", "95vh"];
 const CONSOLE_WIDTH     = MONACO_WIDTH;
