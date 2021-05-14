@@ -25,6 +25,8 @@ import precompile from './res/precompile.json';
 import convert from './Convert';
 import { connectUSBDAPjs, MicroBitConnection } from './ConnectUSB';
 
+import { Core } from './sim/core';
+
 const AWS_COMPILE = true; //! Enable to have actual builds.
 
 // Toggle options
@@ -263,6 +265,12 @@ function App() {
         }
     }
 
+    const tokenTest = () => {
+        let core = new Core();
+
+        core.prepare(editor.getModel().getValue());
+    }
+
     return (
         <>
             <div className="App">
@@ -374,7 +382,7 @@ function App() {
                     </div>
 
                     <div className="Options">
-                        <ButtonComponent cssClass='e-sidebar-dark' title='See editor options/settings.'>
+                        <ButtonComponent cssClass='e-sidebar-dark' title='See editor options/settings.' onClick={tokenTest}>
                             <CgOptions/> Options
                         </ButtonComponent>
 
