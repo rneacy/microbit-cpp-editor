@@ -3,7 +3,7 @@ import { Token, Tokeniser, Method } from "./token";
 // meme
 export class Core {
 
-    queue : Token[] = [];
+    private queue : Token[] = [];
 
     // some constructor
 
@@ -15,8 +15,14 @@ export class Core {
         let tokeniser = new Tokeniser(lines);
 
         let tokens = await tokeniser.tokenise();
+    }
 
-        console.log(tokens);
+    enqueue(token:Token) {
+        this.queue.push(token);
+    }
+
+    next() {
+        return this.queue.shift();
     }
 }
 
