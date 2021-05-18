@@ -9,12 +9,14 @@ import './BitStyle.css';
 const BOARD_DIMENSION = 5;
 
 export default function Bit(props) {
-    return(
-        <div className="MicroBitContainer">
+    return (props.visible) ?
+        (<div className="MicroBitContainer">
             <LEDMatrix leds={props.leds}/>
             <img alt = "" className="MicroBit" src={board}></img>
-        </div>
-    );
+        </div>)
+        :
+        (<div></div>)
+    ;
 }
 
 function LEDMatrix(props) {

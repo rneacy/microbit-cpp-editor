@@ -80,14 +80,16 @@ export class FontData {
     static readonly FONT_WIDTH = 5;
     static readonly FONT_HEIGHT = 5;
 
-    static textToImage(text:string) {
+    static textToImage(text:string, leadIn:boolean = false) {
         text = text.trimEnd();
         let imgw = (this.FONT_WIDTH * text.length) + this.FONT_WIDTH;
         //let imgw = this.FONT_WIDTH * text.length;
         let img = new Image(imgw, Array(this.FONT_HEIGHT).fill(0).map(() => Array(imgw).fill(0)));
 
-        let firstPage = ["0","0","0","0","0"];
-        img.setPage(0, firstPage);
+        if(leadIn) {
+            let firstPage = ["0","0","0","0","0"];
+            img.setPage(0, firstPage);
+        }
 
         text.split('').forEach((char, i) => {
             // Get the ASCII representation of this char and find the starting location in the font bytes.
@@ -98,7 +100,7 @@ export class FontData {
             let charBytes = this.FONT.slice(dataSectionStart, dataSectionStart + this.FONT_WIDTH).map((byte) => byte.toString(2));
 
             // Include this char in the final image.
-            img.setPage(i + 1, charBytes);
+            img.setPage((leadIn) ? (i + 1) : i, charBytes);
         });
 
         return img;

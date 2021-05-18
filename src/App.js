@@ -9,7 +9,7 @@ import { ToastContainer, toast, Zoom } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 // Icon imports
-import { GoLinkExternal } from 'react-icons/go';
+import { GoLinkExternal, GoEye, GoEyeClosed } from 'react-icons/go';
 import { ImCogs, ImCheckmark, ImCross } from 'react-icons/im';
 import { BiImport, BiExport, BiHelpCircle, BiError } from 'react-icons/bi';
 import { CgOptions } from 'react-icons/cg';
@@ -62,6 +62,7 @@ function App() {
     const [mbConnection, setMbConnection] = useState();
     const [serialButtonLabel, setSerialButtonLabel] = useState(SERIAL_LABEL[DISABLED]);
 
+    const [simulatorEnabled, setSimulatorEnabled] = useState(false);
     const [ledMatrix, setLedMatrix] = useState(Array(5).fill(0).map(() => Array(5).fill(0)));
 
     //* Toasts
@@ -295,16 +296,14 @@ function App() {
         });
     }
 
-    const updateMatrixTest = () => {
-        let newLedMatrix = ledMatrix;
-        newLedMatrix[2][3] = 0;
-        setLedMatrix([...newLedMatrix]);
+    const toggleSimulator = () => {
+        setSimulatorEnabled(!simulatorEnabled);
     }
 
     return (
         <>
             <div className="App">
-                <Bit leds={ledMatrix}/>
+                <Bit leds={ledMatrix} visible={simulatorEnabled}/>
                 <div className="Editor">
                     <MonacoEditor 
                         theme="vs-dark"
@@ -373,8 +372,19 @@ function App() {
                             </ButtonComponent>
                         </div>
 
+                        <div className="Interaction-Break"></div>
+
+                        <label className="sidebar-label">Simulator Options</label>
                         <div className="Interaction-Row">
-                            <ButtonComponent cssClass='e-sidebar' onClick={startSimulator} title='Run your code here before you flash it!'>
+                            <ButtonComponent cssClass='e-sidebar' onClick={toggleSimulator} title='Show the virtual micro:bit!'>
+                                {simulatorEnabled ? <GoEyeClosed/>:<GoEye/>} {simulatorEnabled ? "Hide Simulator" : "Show Simulator"}
+                            </ButtonComponent>
+                            <ButtonComponent 
+                                cssClass='e-sidebar' 
+                                onClick={startSimulator} 
+                                title='Run your code here before you flash it!'
+                                disabled={!simulatorEnabled}
+                            >
                                 <FaPlay/> Run Code
                             </ButtonComponent>
                         </div>
@@ -424,7 +434,7 @@ function App() {
                             <CgOptions/> Options
                         </ButtonComponent>
 
-                        <ButtonComponent cssClass='e-sidebar-dark' title='Get additional help.' onClick={updateMatrixTest}>
+                        <ButtonComponent cssClass='e-sidebar-dark' title='Get additional help.'>
                             <BiHelpCircle/> Help
                         </ButtonComponent>
                     </div>

@@ -36,7 +36,7 @@ export default class DisplayHandler implements Handler {
         // param 0  -> requested text/number
         // param 1  -> delay between refreshes (optional)
 
-        let img = FontData.textToImage(params[0].slice(1,-1));
+        let img = FontData.textToImage(params[0].slice(1,-1), true);
         let delay = parseInt(params[1] ?? 100);
         if(isNaN(delay)) delay = 100;
 
