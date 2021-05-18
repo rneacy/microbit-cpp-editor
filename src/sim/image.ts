@@ -15,8 +15,29 @@ export class Image {
     }
 
     getPixel(x: number, y: number) {
-        if (x < 0 || x >= this.width || y < 0 || y >= this.height) return;
+        if (x < 0 || x >= this.width || y < 0 || y >= this.height) return 0;
         return this.data[y][x];
+    }
+
+    shiftLeft(n: number) {
+        n |= 1;
+
+        this.data.forEach((row, y) => {
+            row.forEach((_, x) => {
+                this.setPixel(x, y, this.getPixel(x+n, y));
+            });
+        });
+    }
+
+    //! NOT WORKING
+    shiftRight(n: number) {
+        if(n===undefined) n = 1;
+
+        this.data.forEach((row, y) => {
+            for(let x = row.length - 1; x >= 0; x--) {
+                this.setPixel(x, y, this.getPixel(x+n, y));
+            }
+        });
     }
 
     setPage(pg:number, bin:string[]) {
@@ -42,6 +63,10 @@ export class Image {
             })
         });
     }
+
+    isEmpty() {
+        return !(!!this.data.filter(row => !!row.filter(pix => !!pix).length).length) // what is this LMAO
+    }
 }
 
 export class FontData {
@@ -57,8 +82,12 @@ export class FontData {
 
     static textToImage(text:string) {
         text = text.trimEnd();
+        //let imgw = (this.FONT_WIDTH * text.length) + this.FONT_WIDTH;
         let imgw = this.FONT_WIDTH * text.length;
         let img = new Image(imgw, Array(this.FONT_HEIGHT).fill(0).map(() => Array(imgw).fill(0)));
+
+        //let firstPage = ["0","0","0","0","0"];
+        //img.setPage(0, firstPage);
 
         text.split('').forEach((char, i) => {
             // Get the ASCII representation of this char and find the starting location in the font bytes.

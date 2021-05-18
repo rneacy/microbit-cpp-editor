@@ -5,7 +5,7 @@ export class Token {
 
     // Called function
     modulePath : string[] = [];
-    callingFunction : string = "";
+    method : string = "";
     params : string[] = [];
 
     constructor(private line:string, private isUbit:boolean = true) {
@@ -35,7 +35,7 @@ export class Token {
                         return;
                     }
                     else if (c === Delimiters.OPEN_PARENTHESIS) {
-                        this.callingFunction = currentLexeme.join('');
+                        this.method = currentLexeme.join('');
                         currentLexeme = [];
                         isParams = true;
                         return;
@@ -61,7 +61,7 @@ export class Token {
     }
 
     toString() : string {
-        return `Module: ${this.modulePath}\nFunc: ${this.callingFunction}\nParams: ${this.params}`
+        return `Module: ${this.modulePath}\nFunc: ${this.method}\nParams: ${this.params}`
     }
 }
 

@@ -18,3 +18,5 @@ export const useEffectFirstChange = (func, deps) => {
         return () => first.current = false;
     }, []);
 }
+
+export const logAsModule = (mod, msg) => console.log(`[${mod}] ${msg}`);

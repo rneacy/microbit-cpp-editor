@@ -1,4 +1,4 @@
 export default interface Handler {
-    methods : string[];
-    handle() : Promise<void>;
+    handle(method:string, params:string[]) : Promise<void>;
+    isBound:boolean;
 }

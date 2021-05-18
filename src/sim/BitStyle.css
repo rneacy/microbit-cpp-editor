@@ -1,0 +1,20 @@
+.MicroBit {
+    position: absolute;
+    z-index: 1;
+}
+
+.LED {
+    position: absolute;
+    z-index: 2;
+}
+
+.LEDTable {
+    position: absolute;
+    left:95px;
+    top:57px;
+}
+
+.LEDTable td {
+    padding-top: 19px;
+    padding-right: 20px;
+}

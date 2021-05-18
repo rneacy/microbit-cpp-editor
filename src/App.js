@@ -8,24 +8,30 @@ import logo from './res/logo.portrait.white.notxt.svg';
 import { ToastContainer, toast, Zoom } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+// Icon imports
 import { GoLinkExternal } from 'react-icons/go';
 import { ImCogs, ImCheckmark, ImCross } from 'react-icons/im';
 import { BiImport, BiExport, BiHelpCircle, BiError } from 'react-icons/bi';
 import { CgOptions } from 'react-icons/cg';
 import { GrInProgress, GrStatusDisabledSmall } from 'react-icons/gr';
 import { RiUsbFill, RiFlashlightFill, RiFileEditLine } from 'react-icons/ri';
-import { FaPager } from 'react-icons/fa';
+import { FaPager, FaPlay } from 'react-icons/fa';
 
 import axios from "axios";
 import MonacoEditor from 'react-monaco-editor';
 import { useFilePicker } from 'use-file-picker';
 import { ButtonComponent } from '@syncfusion/ej2-react-buttons';
 
+import { Howl, Howler } from 'howler';
+
 import precompile from './res/precompile.json';
 import convert from './Convert';
 import { connectUSBDAPjs, MicroBitConnection } from './ConnectUSB';
 
-import { Core } from './sim/core';
+// Simulator imports
+import Simulator from './sim/core';
+import { Image, FontData } from './sim/image';
+import Bit from './sim/Bit';
 
 const AWS_COMPILE = true; //! Enable to have actual builds.
 
@@ -55,6 +61,10 @@ function App() {
 
     const [mbConnection, setMbConnection] = useState();
     const [serialButtonLabel, setSerialButtonLabel] = useState(SERIAL_LABEL[DISABLED]);
+
+    const [ledMatrix, setLedMatrix] = useState(Array(5).fill(0).map(() => Array(5).fill(0)));
+
+    const sim = new Simulator();
 
     //* Toasts
     const SuccessToast = (props, { closeToast, toastProps }) => (
@@ -266,14 +276,35 @@ function App() {
     }
 
     const tokenTest = () => {
-        let core = new Core();
+        let test = "poo";
+        let img = FontData.textToImage(test);
+    }
+    
+    const audioTest = () => {
+    }
 
-        core.prepare(editor.getModel().getValue());
+    const startSimulator = () => {
+        // Ensure that the display is bound
+        if(!sim.handlers.display.isBound) {
+            sim.handlers.display.bindDisplay(setLedMatrix);
+        }
+
+        sim.prepare(editor.getModel().getValue())
+        .then(() => {
+            sim.run();
+        });
+    }
+
+    const updateMatrixTest = () => {
+        let newLedMatrix = ledMatrix;
+        newLedMatrix[2][3] = 0;
+        setLedMatrix([...newLedMatrix]);
     }
 
     return (
         <>
             <div className="App">
+                <Bit leds={ledMatrix}/>
                 <div className="Editor">
                     <MonacoEditor 
                         theme="vs-dark"
@@ -320,6 +351,7 @@ function App() {
                             <img src={logo} className="Logo" alt="micro:bit logo" />
                         </a>
                         <p>C++ Editor</p>
+                        <img alt = "" className="MicroBit" src="../res/mbit.png"></img>
                     </div>
 
                     <div className="Interaction">
@@ -338,6 +370,12 @@ function App() {
                             </ButtonComponent>
                             <ButtonComponent cssClass='e-sidebar' onClick={openFileSave} title='Export this .cpp file.'>
                                 <BiExport/> Export
+                            </ButtonComponent>
+                        </div>
+
+                        <div className="Interaction-Row">
+                            <ButtonComponent cssClass='e-sidebar' onClick={startSimulator} title='Run your code here before you flash it!'>
+                                <FaPlay/> Run Code
                             </ButtonComponent>
                         </div>
 
@@ -386,7 +424,7 @@ function App() {
                             <CgOptions/> Options
                         </ButtonComponent>
 
-                        <ButtonComponent cssClass='e-sidebar-dark' title='Get additional help.'>
+                        <ButtonComponent cssClass='e-sidebar-dark' title='Get additional help.' onClick={updateMatrixTest}>
                             <BiHelpCircle/> Help
                         </ButtonComponent>
                     </div>
