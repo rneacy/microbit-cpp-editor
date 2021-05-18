@@ -64,8 +64,6 @@ function App() {
 
     const [ledMatrix, setLedMatrix] = useState(Array(5).fill(0).map(() => Array(5).fill(0)));
 
-    const sim = new Simulator();
-
     //* Toasts
     const SuccessToast = (props, { closeToast, toastProps }) => (
         <div>
@@ -284,6 +282,8 @@ function App() {
     }
 
     const startSimulator = () => {
+        const sim = new Simulator();
+
         // Ensure that the display is bound
         if(!sim.handlers.display.isBound) {
             sim.handlers.display.bindDisplay(setLedMatrix);

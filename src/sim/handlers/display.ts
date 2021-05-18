@@ -1,14 +1,22 @@
+import Simulator from "../core";
 import { FontData } from "../image";
 import Handler from "./handler";
 
 export default class DisplayHandler implements Handler {
 
     public isBound:boolean = false;
+
     readonly MATRIX_DIMENSION = 5;
     private ledMatrix = Array(this.MATRIX_DIMENSION).fill(0).map(() => Array(this.MATRIX_DIMENSION).fill(0));
     private matrixHook:Function = () => {};
 
     methods = ['scroll', 'scrollAsync', 'print', 'printChar'];
+
+    private readonly simulatorCallback:Simulator;
+
+    constructor(callback:Simulator) {
+        this.simulatorCallback = callback;
+    }
 
     async handle(method:string, params:string[]) {
         switch(method){
@@ -53,6 +61,7 @@ export default class DisplayHandler implements Handler {
             }
             else {
                 clearInterval(timeoutID);
+                this.simulatorCallback.executeNext();
             }
 
         }, delay);

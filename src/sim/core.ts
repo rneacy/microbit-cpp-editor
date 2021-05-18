@@ -21,8 +21,8 @@ export default class Simulator {
 
     constructor() {
         this.handlers = {
-            "base":    new BaseHandler(),
-            "display": new DisplayHandler(),
+            "base":    new BaseHandler(this),
+            "display": new DisplayHandler(this),
             "audio":   new AudioHandler()
         };
     
@@ -50,22 +50,41 @@ export default class Simulator {
             .then(() => logAsModule(this.MOD_NAME, "Simulator ready."));
     }
 
-    async run() {
+    run() {
         if (!this.ready) throw new Error('Simulator has not finished preparing.');
 
         this.queue.forEach((token, index) => logAsModule(this.MOD_NAME, `PC: ${index} | Inst: ${token.modulePath}.${token.method} => ${token.params}`));
     
         // right now everything is blocking.
-        for(let pc = 0; pc < this.queue.length; pc++) {
-            let mod = this.queue[pc].modulePath[0] ?? "base";
-            let method = this.queue[pc].method;
-            let params = this.queue[pc].params;
-            await this.handlers[mod].handle(method, params);
+        // for(let pc = 0; pc < this.queue.length; pc++) {
+        //     let mod = this.queue[pc].modulePath[0] ?? "base";
+        //     let method = this.queue[pc].method;
+        //     let params = this.queue[pc].params;
+        //     await this.handlers[mod].handle(method, params);
+        // }
+
+        this.running = true;
+        
+        this.executeNext();
+    }
+
+    executeNext() {
+        let inst = this.getNext();
+
+        if(inst) {
+            let mod = inst.modulePath[0] ?? "base";
+            let method = inst.method;
+            let params = inst.params;
+            this.handlers[mod].handle(method, params);
+        }
+        else{
+            this.stop();
         }
     }
 
-    async stop() {
+    stop() {
         if (!this.running) return;
+        this.running = false;
     }
 
     /**
@@ -76,7 +95,7 @@ export default class Simulator {
         this.queue.push(token);
     }
 
-    next() {
+    getNext() {
         return this.queue.shift();
     }
 }
