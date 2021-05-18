@@ -26,6 +26,7 @@ export default class DisplayHandler implements Handler {
             case 'scrollAsync':
                 break;
             case 'print':
+                this.print(params);
                 break;
             case 'printChar':
                 break;
@@ -58,6 +59,41 @@ export default class DisplayHandler implements Handler {
             // Scroll 'til we can't no mo'
             if(!img.isEmpty()) {
                 img.shiftLeft(1); // this is an assumption for now
+            }
+            else {
+                clearInterval(timeoutID);
+                this.simulatorCallback.executeNext();
+            }
+
+        }, delay);
+    }
+
+    print(params:string[]) {
+        // param 0  -> requested text/number
+        // param 1  -> delay between refreshes (optional)
+
+        let img = FontData.textToImage(params[0].slice(1,-1));
+        let delay = parseInt(params[1] ?? 400);
+        if(isNaN(delay)) delay = 100;
+
+        // Now scroll through these
+        let timeoutID = setInterval(() => {
+            // Clear the matrix
+            this.ledMatrix.map((el) => el.fill(0));
+
+            // Get the text image as it is presently.
+            for(let y = 0; y < this.MATRIX_DIMENSION; y++) {
+                for(let x = 0; x < this.MATRIX_DIMENSION; x++) {
+                    this.ledMatrix[y][x] = img.data[y][x];
+                }
+            }
+
+            // Update on screen
+            this.matrixHook([...this.ledMatrix]);
+
+            // Scroll 'til we can't no mo'
+            if(!img.isEmpty()) {
+                img.shiftLeft(5);
             }
             else {
                 clearInterval(timeoutID);
