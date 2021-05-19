@@ -3,15 +3,37 @@
     z-index: 1;
 }
 
-.LED {
+.LED{
     position: absolute;
     z-index: 2;
+}
+
+.Button {
+    position: absolute;
+    z-index: 2;
+}
+
+.ButtonHTML {
+    position: absolute;
+    z-index: 2;
+    margin: 0;
+    padding: 0;
 }
 
 .LEDTable {
     position: absolute;
     left:95px;
     top:57px;
+}
+
+.ButtonTable {
+    position: absolute;
+    left:23px;
+    top: 101px;
+}
+
+.ButtonTable th {
+    padding-right: 213px;
 }
 
 .LEDTable td {

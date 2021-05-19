@@ -30,6 +30,8 @@ export default class DisplayHandler implements Handler {
                 break;
             case 'printChar':
                 break;
+            default:
+                this.simulatorCallback.executeNext();
         }
     }
 

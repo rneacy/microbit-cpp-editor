@@ -62,6 +62,7 @@ function App() {
     const [mbConnection, setMbConnection] = useState();
     const [serialButtonLabel, setSerialButtonLabel] = useState(SERIAL_LABEL[DISABLED]);
 
+    const [simulator, setSimulator] = useState(new Simulator());
     const [simulatorEnabled, setSimulatorEnabled] = useState(false);
     const [ledMatrix, setLedMatrix] = useState(Array(5).fill(0).map(() => Array(5).fill(0)));
 
@@ -283,16 +284,14 @@ function App() {
     }
 
     const startSimulator = () => {
-        const sim = new Simulator();
-
         // Ensure that the display is bound
-        if(!sim.handlers.display.isBound) {
-            sim.handlers.display.bindDisplay(setLedMatrix);
+        if(!simulator.handlers.display.isBound) {
+            simulator.handlers.display.bindDisplay(setLedMatrix);
         }
 
-        sim.prepare(editor.getModel().getValue())
+        simulator.prepare(editor.getModel().getValue())
         .then(() => {
-            sim.run();
+            simulator.run();
         });
     }
 
@@ -303,7 +302,7 @@ function App() {
     return (
         <>
             <div className="App">
-                <Bit leds={ledMatrix} visible={simulatorEnabled}/>
+                <Bit sim={simulator} leds={ledMatrix} visible={simulatorEnabled}/>
                 <div className="Editor">
                     <MonacoEditor 
                         theme="vs-dark"

@@ -43,12 +43,12 @@ export class Token {
                 }
                 else {
                     if (c === Delimiters.COMMA) {
-                        this.params.push(currentLexeme.join(''));
+                        this.params.push(currentLexeme.join('').trimStart());
                         currentLexeme = [];
                         return;
                     }
                     else if (c === Delimiters.CLOSE_PARENTHESIS) {
-                        this.params.push(currentLexeme.join(''));
+                        this.params.push(currentLexeme.join('').trimStart());
                         currentLexeme = [];
                         isParams = false;
                         return;
@@ -85,10 +85,10 @@ export class Token {
     /**
      * Takes the current supplied code and returns it fully tokenised.
      */
-    async tokenise() : Promise<Token[]>{
-        let tokens : Token[] = [];
+    async tokenise() : Promise<{ [method:string]: Token[] }> {
+        let tokens : { [method:string]: Token[] } = {};
 
-        let currentMethod : Method;
+        let currentMethod : string = "";
 
         this.lines.forEach((el, i) => {
             if (el.includes('#include')) { // This is a bit naughty since it's not technically tokenisation but who cares. (what a madman)
@@ -96,13 +96,13 @@ export class Token {
                 return;
             }
 
-            if (el.includes('int main')) { // for now
-                currentMethod = new Method('int', 'main', []);
-                return;
+            if (el.includes("int") && el.includes("{")) { // so bad but whatever not enough time
+                currentMethod = el.slice(4).split("(")[0].trim();
+                tokens[currentMethod] = [];
             }
 
             if (el.includes(this._mainModule.concat(this._moduleDelim))){ // For now we're only dealing with uBit modules.
-                tokens.push( new Token(el) );
+                tokens[currentMethod].push( new Token(el ));
             }
         });
 

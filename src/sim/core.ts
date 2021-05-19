@@ -6,6 +6,7 @@ import DisplayHandler from "./handlers/display";
 import AudioHandler from "./handlers/audio";
 
 import { logAsModule } from '../Util';
+import MessageBusHandler from "./handlers/messagebus";
 
 // meme
 export default class Simulator {
@@ -17,18 +18,22 @@ export default class Simulator {
 
     private queue : Token[];
 
+    private methods : { [method:string]: Token[] };
+
     public handlers: Record<string, Handler>;
 
     constructor() {
         this.handlers = {
-            "base":    new BaseHandler(this),
+            "base": new BaseHandler(this),
             "display": new DisplayHandler(this),
-            "audio":   new AudioHandler()
+            "audio": new AudioHandler(),
+            "messageBus": new MessageBusHandler(this)
         };
     
         this.ready = false;
         this.running = false;
         this.queue = [];
+        this.methods = {};
     }
     /**
      * Prepares to start execution of new user code.
@@ -45,7 +50,12 @@ export default class Simulator {
         let tokeniser = new Tokeniser(lines);
 
         await tokeniser.tokenise()
-            .then(tokens => tokens.forEach(token => this.enqueue(token)))
+            .then(tokens => {
+                // tokens.forEach(token => this.enqueue(token))
+                this.methods = tokens;
+
+                this.methods.main.forEach(token => this.enqueue(token));
+            })
             .then(() => this.ready=true)
             .then(() => logAsModule(this.MOD_NAME, "Simulator ready."));
     }
@@ -54,14 +64,6 @@ export default class Simulator {
         if (!this.ready) throw new Error('Simulator has not finished preparing.');
 
         this.queue.forEach((token, index) => logAsModule(this.MOD_NAME, `PC: ${index} | Inst: ${token.modulePath}.${token.method} => ${token.params}`));
-    
-        // right now everything is blocking.
-        // for(let pc = 0; pc < this.queue.length; pc++) {
-        //     let mod = this.queue[pc].modulePath[0] ?? "base";
-        //     let method = this.queue[pc].method;
-        //     let params = this.queue[pc].params;
-        //     await this.handlers[mod].handle(method, params);
-        // }
 
         this.running = true;
         
@@ -93,6 +95,11 @@ export default class Simulator {
      */
     enqueue(token:Token) {
         this.queue.push(token);
+    }
+
+    enqueueExistingMethod(method:string) {
+        logAsModule("Sim", `Enqueuing ${method}`)
+        this.methods[method].forEach(token => this.enqueue(token));
     }
 
     getNext() {
