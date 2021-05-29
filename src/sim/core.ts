@@ -77,6 +77,9 @@ export default class Simulator {
             let mod = inst.modulePath[0] ?? "base";
             let method = inst.method;
             let params = inst.params;
+
+            mod = (this.handlers[mod]) ? mod : "base";
+
             this.handlers[mod].handle(method, params);
         }
         else{

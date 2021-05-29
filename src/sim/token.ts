@@ -96,8 +96,10 @@ export class Token {
                 return;
             }
 
-            if (el.includes("int") && el.includes("{")) { // so bad but whatever not enough time
-                currentMethod = el.slice(4).split("(")[0].trim();
+            let methodType = el.split(" ")[0];
+
+            if (MethodTypes.includes(methodType) && el.includes("{")) { // so bad but whatever not enough time
+                currentMethod = el.slice(methodType.length).split("(")[0].trim();
                 tokens[currentMethod] = [];
             }
 
@@ -123,3 +125,5 @@ class Delimiters {
     static readonly CLOSE_PARENTHESIS = ")";
     static readonly ASSIGNMENT = "=";
 }
+
+export const MethodTypes = ["int", "void"];
