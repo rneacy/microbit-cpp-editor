@@ -46,7 +46,7 @@ const CONSOLE_WIDTH     = MONACO_WIDTH;
 const SERIAL_LABEL      = ["Serial", "Editor"];
 
 function App() {
-    const [code, setCode] = useState('#include "MicroBit.h"\n\nMicroBit uBit;\n\nint main(){\n\tuBit.init();\n\n\twhile(1)\n\t\tuBit.display.scroll("Hello world!");\n}');
+    const [code, setCode] = useState('// Here goes your C++ code!\n#include "MicroBit.h" // This is where what makes your micro:bit work comes from.\n\nMicroBit uBit;\n\nint main(){\n\tuBit.init();\n\n\twhile(1)\n\t\tuBit.display.scroll("Hello world!");\n}');
     const [consoleOut, setConsoleOut] = useState('');
     const [consoleInput, setConsoleInput] = useState('');
     const [editor, setEditor] = useState();
@@ -66,6 +66,8 @@ function App() {
     const [simulatorEnabled, setSimulatorEnabled] = useState(false);
     const [ledMatrix, setLedMatrix] = useState(Array(5).fill(0).map(() => Array(5).fill(0)));
 
+    let test = "";
+
     //* Toasts
     const SuccessToast = (props, { closeToast, toastProps }) => (
         <div>
@@ -82,6 +84,11 @@ function App() {
             <GrInProgress/> {props.msg}
         </div>
     );
+
+    const whatever = () => {
+        let msg = "Your micro:bit was connected!";
+        toast.success(<SuccessToast msg={msg}></SuccessToast>);
+    }
 
     //* Import handling
     const [filesContent, errors, openFileSelector, loading] = useFilePicker({
@@ -129,7 +136,7 @@ function App() {
     //* Compilation handling
     const attemptCompile = async () => {
         setCompiling(true);
-        const msg = "Compilation started...";
+        const msg = "Making your program... hold on!";
         toast.info(<InfoToast msg={msg} />);
         
         const converted = await convert(editor.getModel().getValue());
@@ -145,7 +152,7 @@ function App() {
             await axios
                 .post("https://ejnno1d6p3.execute-api.eu-west-2.amazonaws.com/build/codalbuild", converted, { headers: headers } )
                 .then(res => {
-                    toast.success(<SuccessToast msg="Compiled successfully." />);
+                    toast.success(<SuccessToast msg="Your program was made!" />);
                     
                     compiledProgram = JSON.parse(res.data.body);
 
@@ -178,7 +185,7 @@ function App() {
 
     //* Editor setup
     const editorOptions = {
-        fontSize: 18,
+        fontSize: 24,
         scrollBeyondLastLine: false
     };
     const consoleOptions = {
@@ -207,7 +214,10 @@ function App() {
     //* micro:bit USB connection
     const connectToMicroBit = () => {
         connectUSBDAPjs()
-            .then(_mbCon => setMbConnection(_mbCon))
+            .then(_mbCon => {
+                setMbConnection(_mbCon);
+                toast.success(<SuccessToast msg={"Your micro:bit is connected!"}></SuccessToast>);
+            });
     }
     useEffectFirstChange(() => {
         if (mbConnection !== undefined) {
@@ -255,7 +265,8 @@ function App() {
                 toggleEditors();
 
                 mbConnection.dap.on(MicroBitConnection.SERIAL_EVENT, (data) => {
-                    setConsoleOut(consoleOut + consoleOut === '' ? '':"\n" + data);
+                    test += data;
+                    setConsoleOut(test);
                 });
             }
             else {    
@@ -433,7 +444,7 @@ function App() {
                             <CgOptions/> Options
                         </ButtonComponent>
 
-                        <ButtonComponent cssClass='e-sidebar-dark' title='Get additional help.'>
+                        <ButtonComponent cssClass='e-sidebar-dark' title='Get additional help.' onClick={whatever}>
                             <BiHelpCircle/> Help
                         </ButtonComponent>
                     </div>
