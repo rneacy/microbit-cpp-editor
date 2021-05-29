@@ -21,7 +21,7 @@ export class MicroBitConnection {
         await this.dap.connect()
             .then(() => {
                 console.info("USB: Connected!");
-                this.dap.setSerialBaudrate(this.FAST_SERIAL_BAUD);
+                this.dap.setSerialBaudrate(this.SLOW_SERIAL_BAUD);
                 this.connected = true;
             })
             .catch((err) => {
@@ -51,7 +51,7 @@ export class MicroBitConnection {
             console.warn("USB: Wasn't connected; attempting...");
             await this.connect();
         }
-        this.dap.startSerialRead(1);
+        this.dap.startSerialRead(1, false);
         this.serialMode = true;
         console.info("USB: Now in serial mode.");
     }
